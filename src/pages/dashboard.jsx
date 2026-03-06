@@ -7,20 +7,53 @@ import {
 
 import CountryCard from "../components/country-card/country-card.component";
 import Search from "../components/search/search.component";
-import WeatherCard from "../components/weather-card/weather-card.component";
+
+import "./dashboard.styles.css";
 
 const Dashboard = () => {
   const [searchCountry, setSearchCountry] = useState("");
+  const [countryData, setCountryData] = useState(null);
 
-  // This should trigger the APIs to pull whatever the new information is.
   useEffect(() => {
     if (!searchCountry) return;
 
     const fetchData = async () => {
-      const countryData = await fetchCountryInformation(searchCountry);
-      const latlong = countryData.capitalInfo.latlng;
+      const countryDataFetch = await fetchCountryInformation(searchCountry);
+      const { capital, capitalInfo, flag, languages, population } =
+        countryDataFetch;
 
-      console.log(latlong);
+      const capitalLat = capitalInfo.latlng[0];
+      const capitalLong = capitalInfo.latlng[1];
+
+      const capitalWeatherDataFetch = await fetchWeatherInformation(
+        capitalLong,
+        capitalLat,
+      );
+
+      const combined = Object.fromEntries(
+        Object.entries(capitalWeatherDataFetch.current_weather).map(
+          ([key, value]) => [
+            key,
+            `${value} ${capitalWeatherDataFetch.current_weather_units[key]}`,
+          ],
+        ),
+      );
+
+      setCountryData({
+        country: searchCountry.charAt(0).toUpperCase() + searchCountry.slice(1),
+        capital: capital[0],
+        capitalData: {
+          lat: capitalLat,
+          long: capitalLong,
+        },
+        flag: flag,
+        languages: [...Object.values(languages)],
+        population: population,
+        temperature: combined.temperature,
+        time: combined.time,
+        windDirection: combined.winddirection,
+        windSpeed: combined.windspeed,
+      });
     };
 
     fetchData();
@@ -38,14 +71,13 @@ const Dashboard = () => {
         placeholder="Enter a country"
       />
 
-      {searchCountry && (
+      {countryData && (
         <div className="results-container">
           <p>
             Showing results for: <strong>{searchCountry}</strong>
           </p>
           <div className="card-container">
-            <CountryCard />
-            <WeatherCard />
+            <CountryCard countryData={countryData} />
           </div>
         </div>
       )}

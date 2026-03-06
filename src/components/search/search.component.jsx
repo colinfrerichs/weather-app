@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import "./search.styles.css";
+
 const Search = ({ label, onSearch, placeholder }) => {
   const [query, setQuery] = useState("");
 
@@ -14,17 +16,28 @@ const Search = ({ label, onSearch, placeholder }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="search">{label}</label>
-      <input
-        id="search"
-        name="search"
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder={placeholder}
-        value={query}
-      />
-      <button type="submit">Search</button>
-    </form>
+    <div className="search-card">
+      <form className="search-form" onSubmit={handleSubmit}>
+        <label className="search-label" htmlFor="search">
+          {label}
+        </label>
+
+        <div className="search-input-group">
+          <input
+            id="search"
+            name="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={placeholder}
+            className="search-input"
+          />
+
+          <button type="submit" className="search-button">
+            Search
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 
