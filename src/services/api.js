@@ -1,10 +1,14 @@
-// The APIs should use the city being input to get the weather for that city.
-// So, one API would pull all of the information about that city, and one would pull the information about
-// the weather and the transformer will combine them.
+import { fetchJson } from "../utils/fetchJson";
 
-// https://restcountries.com/v3.1/name/peru
-// OpenWeather
-
-export const fetchCountryInformation = (countryName) => {
+export const fetchCountryInformation = async (countryName) => {
     const url = `https://restcountries.com/v3.1/name/${countryName.toLowerCase()}`
+    const data = await fetchJson(url);
+
+    return data[0];
+}
+
+export const fetchWeatherInformation = async (long, lat) => {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=-${long}&current_weather=true`;
+
+    return fetchJson(url);
 }
